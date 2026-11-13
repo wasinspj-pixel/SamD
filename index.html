@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>3D ASCII Art Cinematic Experience</title>
-  <!-- Tailwind CSS for crisp UI controls & responsive framing -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: JetBrains Mono & Fira Code for authentic Hacker Terminal / ASCII aesthetic -->
+  <!-- Monospace & Thai Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-outer: #010205;
       --bg-stage: #03050a;
-      --accent-glow: #38bdf8;
     }
-
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
-
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
       background-color: var(--bg-outer);
-      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Noto Sans Thai', monospace;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -38,7 +34,7 @@
       color: #e2e8f0;
     }
 
-    /* 9:16 Vertical Stage Container (1080x1920 Target Ratio) */
+    /* 9:16 Vertical Recording Frame */
     #stage-wrapper {
       position: relative;
       height: 100vh;
@@ -46,14 +42,13 @@
       aspect-ratio: 9 / 16;
       max-width: 100vw;
       max-height: 100dvh;
-      background: radial-gradient(circle at 50% 34%, #070d1d 0%, #03050a 65%, #010205 100%);
-      box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 1px 1px rgba(56, 189, 248, 0.15);
+      background: radial-gradient(circle at 50% 35%, #081024 0%, #03050a 65%, #010205 100%);
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 1px 1px rgba(56, 189, 248, 0.22);
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    /* Full-bleed support on narrow portrait phones */
     @media (max-aspect-ratio: 9/16) {
       #stage-wrapper {
         width: 100vw;
@@ -63,75 +58,69 @@
       }
     }
 
-    /* Main 3D ASCII Canvas Area (Top ~67% of 9:16 frame) */
+    /* Main 3D Canvas Stage (Top 68%) */
     #canvas-container {
       position: relative;
       width: 100%;
-      height: 67%;
+      height: 68%;
       flex-shrink: 0;
       cursor: grab;
       touch-action: none;
+      overflow: hidden;
     }
-
     #canvas-container:active {
       cursor: grabbing;
     }
-
     canvas#ascii-canvas {
       display: block;
       width: 100%;
       height: 100%;
     }
 
-    /* Subtle CRT Scanline & Vignette overlay for cinematic depth */
+    /* Subtle CRT Scanlines */
     .crt-overlay {
       pointer-events: none;
       position: absolute;
       inset: 0;
-      background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.22) 50%
-      );
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.24) 50%);
       background-size: 100% 3px;
       opacity: 0.35;
-      z-index: 5;
+      z-index: 4;
     }
 
-    /* Glowing Divider Line between 3D Stage and Code Terminal */
+    /* Glowing Divider + Telemetry Strip */
     #terminal-divider {
       height: 2px;
       width: 100%;
-      background: linear-gradient(90deg, transparent 0%, #10b981 25%, #38bdf8 50%, #10b981 75%, transparent 100%);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.75), 0 0 24px rgba(16, 185, 129, 0.45);
+      background: linear-gradient(90deg, transparent 0%, #10b981 20%, #38bdf8 50%, #f59e0b 80%, transparent 100%);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.8), 0 0 26px rgba(16, 185, 129, 0.45);
       flex-shrink: 0;
       z-index: 10;
     }
 
-    /* Bottom Code Editor Visualization (~33% of 9:16 frame) */
+    /* Bottom Code Editor Terminal (Bottom 32%) */
     #code-terminal {
       position: relative;
       width: 100%;
-      height: calc(33% - 2px);
-      background: linear-gradient(180deg, #04070f 0%, #020408 100%);
+      height: calc(32% - 2px);
+      background: linear-gradient(180deg, #04070f 0%, #020307 100%);
       display: flex;
       flex-direction: column;
-      font-size: clamp(9.5px, 1.45vh, 12.5px);
-      line-height: 1.48;
+      font-size: clamp(9.5px, 1.4vh, 12px);
+      line-height: 1.45;
       z-index: 10;
       overflow: hidden;
     }
 
-    /* Syntax Highlighting Colors */
-    .tok-kw { color: #f472b6; font-weight: 600; }      /* def, for, in, if, return */
-    .tok-fn { color: #38bdf8; }                       /* function names */
-    .tok-str { color: #fbbf24; }                      /* strings & ASCII chars */
-    .tok-num { color: #34d399; }                      /* numbers */
-    .tok-op { color: #94a3b8; }                       /* operators */
-    .tok-cm { color: #475569; font-style: italic; }   /* comments */
-    .tok-var { color: #e2e8f0; }                      /* variables */
-    .tok-cls { color: #a78bfa; font-weight: 600; }    /* classes / constants */
+    /* Syntax Highlighting */
+    .tok-kw { color: #f472b6; font-weight: 600; }
+    .tok-fn { color: #38bdf8; }
+    .tok-str { color: #fbbf24; }
+    .tok-num { color: #34d399; }
+    .tok-cm { color: #475569; font-style: italic; }
+    .tok-var { color: #e2e8f0; }
+    .tok-cls { color: #a78bfa; font-weight: 600; }
 
-    /* Active executing line highlight in Code Editor */
     .code-line {
       display: flex;
       align-items: center;
@@ -140,28 +129,25 @@
       transition: background-color 0.2s ease, border-color 0.2s ease;
       white-space: pre;
     }
-
     .code-line.active-exec {
-      background: linear-gradient(90deg, rgba(16, 185, 129, 0.16) 0%, rgba(56, 189, 248, 0.06) 85%, transparent 100%);
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.18) 0%, rgba(56, 189, 248, 0.06) 85%, transparent 100%);
       border-left-color: #10b981;
     }
-
     .line-num {
       display: inline-block;
-      width: 24px;
+      width: 22px;
       color: #334155;
       text-align: right;
-      margin-right: 12px;
+      margin-right: 10px;
       flex-shrink: 0;
-      font-size: 0.9em;
+      font-size: 0.88em;
     }
-
     .code-line.active-exec .line-num {
       color: #34d399;
       font-weight: 700;
     }
 
-    /* Custom Range Sliders for Settings Drawer */
+    /* Custom Sliders */
     input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
@@ -171,84 +157,91 @@
       border-radius: 999px;
       outline: none;
     }
-
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 15px;
-      height: 15px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #38bdf8;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.85);
       cursor: pointer;
     }
 
-    /* Hide scrollbars cleanly */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     @keyframes pulseDot {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.45; transform: scale(0.85); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
-    .status-dot {
-      animation: pulseDot 1.4s infinite ease-in-out;
-    }
+    .status-dot { animation: pulseDot 1.3s infinite ease-in-out; }
   </style>
 </head>
 <body>
 
-  <!-- 9:16 Vertical Frame Wrapper -->
+  <!-- 9:16 Vertical Stage -->
   <div id="stage-wrapper">
 
-    <!-- Top Interactive 3D ASCII Viewport -->
+    <!-- Top 3D ASCII Canvas Viewport -->
     <div id="canvas-container">
       <canvas id="ascii-canvas"></canvas>
       <div class="crt-overlay"></div>
 
-      <!-- Subtle Minimalist Floating Gear Button (Discreet for clean screen recording) -->
-      <button
-        id="open-settings-btn"
-        title="Open Creative Controls"
-        class="absolute top-3 right-3 z-20 p-2.5 rounded-xl bg-slate-950/55 hover:bg-slate-900/90 border border-slate-700/50 text-slate-300 hover:text-cyan-300 backdrop-blur-md transition-all active:scale-95 shadow-lg"
-        aria-label="Settings"
+      <!-- Minimal HUD Controls (Auto-hidden in Recording Mode) -->
+      <div id="hud-controls" class="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none transition-opacity duration-300">
+        <!-- Quick Cute Music Toggle -->
+        <button
+          id="quick-music-btn"
+          class="pointer-events-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950/65 hover:bg-slate-900/90 border border-slate-700/60 text-slate-200 hover:text-amber-300 backdrop-blur-md text-[11px] font-semibold transition-all active:scale-95 shadow-lg"
+          title="เปิด/ปิดเพลงประกอบน่ารักๆ"
+        >
+          <span id="quick-music-icon">🎵</span>
+          <span id="quick-music-label">เปิดเพลง</span>
+        </button>
+
+        <!-- Settings Drawer Trigger -->
+        <button
+          id="open-settings-btn"
+          class="pointer-events-auto flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950/65 hover:bg-slate-900/90 border border-slate-700/60 text-slate-200 hover:text-cyan-300 backdrop-blur-md text-[11px] font-semibold transition-all active:scale-95 shadow-lg"
+          title="ตั้งค่าการแสดงผล"
+        >
+          <span>⚙️</span>
+          <span>ตั้งค่า</span>
+        </button>
+      </div>
+
+      <!-- Recording Mode Toast Notification -->
+      <div
+        id="record-toast"
+        class="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 z-30 w-[88%] max-w-xs px-3.5 py-2.5 rounded-xl bg-slate-950/90 border border-cyan-400/50 text-cyan-200 text-[11px] font-medium text-center shadow-2xl backdrop-blur-md transition-all duration-300 opacity-0 -translate-y-2"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      </button>
+        🎬 โหมดบันทึกวิดีโอ 9:16 — แตะหน้าจอ 1 ครั้งเพื่อเรียกเมนูกลับ
+      </div>
     </div>
 
     <!-- Glowing Neon Divider -->
     <div id="terminal-divider"></div>
 
-    <!-- Bottom Hacker Terminal / Live Code Editor Visualization -->
+    <!-- Bottom Hacker Code Terminal -->
     <div id="code-terminal">
-      <!-- Editor Top Tab Bar -->
+      <!-- Editor Top Bar -->
       <div class="flex items-center justify-between px-3 py-1.5 bg-[#070b14] border-b border-slate-800/80 shrink-0">
         <div class="flex items-center gap-2">
-          <!-- Window control dots -->
           <div class="flex items-center gap-1.5 mr-1">
             <span class="w-2.5 h-2.5 rounded-full bg-rose-500/85 inline-block"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-amber-400/85 inline-block"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/85 inline-block"></span>
           </div>
-          <!-- Active Python Script Tab -->
-          <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-900/90 border border-slate-700/60 text-cyan-300 font-semibold text-[11px]">
+          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-700/60 text-cyan-300 font-semibold text-[10.5px]">
             <span class="text-amber-400">🐍</span>
             <span id="editor-filename">christmas_tree.py</span>
           </div>
         </div>
 
-        <!-- Telemetry: RUNNING status & Live FPS -->
-        <div class="flex items-center gap-2.5 text-[10px] font-bold tracking-wider">
-          <div id="status-badge" class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400">
+        <!-- Live Telemetry -->
+        <div class="flex items-center gap-2 text-[9.5px] font-bold tracking-wider">
+          <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-400">
             <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 status-dot"></span>
             <span id="status-text">RUNNING</span>
           </div>
@@ -258,193 +251,352 @@
         </div>
       </div>
 
-      <!-- Live Syntax-Highlighted Code Body -->
-      <div id="code-lines-container" class="flex-1 py-1.5 overflow-hidden flex flex-col justify-center select-none">
-        <!-- Populated dynamically by CodeEditorVisualizer -->
-      </div>
+      <!-- Syntax-Highlighted Live Code Lines -->
+      <div id="code-lines-container" class="flex-1 py-1 overflow-hidden flex flex-col justify-center select-none"></div>
 
-      <!-- Subtle Terminal Footer Telemetry Bar -->
-      <div class="flex items-center justify-between px-3 py-1 bg-[#03060c] border-t border-slate-800/60 text-[9.5px] text-slate-500 shrink-0">
-        <span id="telemetry-verts">VERTICES: 0 | DEPTH-SORT: PAINTER</span>
-        <span id="telemetry-phase" class="text-cyan-400/80">PHASE: RENDER_LOOP</span>
+      <!-- Bottom Status Footer -->
+      <div class="flex items-center justify-between px-3 py-1 bg-[#050811] border-t border-slate-800/70 text-[9px] text-slate-400 shrink-0">
+        <span id="telemetry-verts">VERTICES: 0 | 3D_PROJECTION: ACTIVE</span>
+        <span id="telemetry-phase" class="text-emerald-400 font-semibold">PHASE: RENDER_LOOP</span>
       </div>
     </div>
 
-    <!-- Collapsible Settings Drawer Overlay -->
+    <!-- Thai Settings Drawer Overlay -->
     <div
       id="settings-drawer"
-      class="absolute inset-0 z-30 bg-slate-950/85 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none flex flex-col justify-between p-4 overflow-y-auto no-scrollbar"
+      class="absolute inset-0 z-30 bg-slate-950/92 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none flex flex-col justify-between p-4 overflow-y-auto no-scrollbar"
     >
       <div>
-        <!-- Drawer Header -->
+        <!-- Header -->
         <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
           <div>
-            <h2 class="text-sm font-bold tracking-wider text-cyan-300 flex items-center gap-2">
-              <span>⚡</span> ASCII ENGINE CONTROLS
+            <h2 class="text-sm font-bold text-cyan-300 flex items-center gap-2">
+              <span>⚡</span> ตั้งค่าแอนิเมชัน 3D ASCII
             </h2>
-            <p class="text-[10px] text-slate-400 mt-0.5">9:16 Cinema Mode • Drag canvas to rotate</p>
+            <p class="text-[10.5px] text-slate-400 mt-0.5">ลากบนวัตถุเพื่อหมุนมุมมอง • แตะเพื่อสร้างประกายไฟ</p>
           </div>
           <button
             id="close-settings-btn"
             class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition"
+            aria-label="ปิดหน้าต่างตั้งค่า"
           >
             ✕
           </button>
         </div>
 
-        <!-- Controls Grid -->
-        <div class="space-y-3 text-xs">
-          <!-- 3D ASCII Object Selector -->
+        <div class="space-y-3.5 text-xs">
+          <!-- 1. 3D Object Selector -->
           <div>
-            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">3D Procedural Model</label>
-            <div class="grid grid-cols-2 gap-1.5" id="model-buttons">
-              <button data-model="tree" class="model-btn px-2.5 py-2 rounded-lg border text-left font-medium transition flex items-center gap-1.5 bg-cyan-500/20 border-cyan-400 text-cyan-200">
-                <span>🎄</span> Christmas Tree
+            <label class="block text-[11px] text-slate-300 mb-1.5 font-semibold">1. เลือกรูปทรง 3D ASCII</label>
+            <div class="grid grid-cols-1 gap-1.5" id="model-buttons">
+              <button data-model="tree" class="model-btn px-3 py-2 rounded-lg border text-left font-medium transition flex items-center gap-2 bg-cyan-500/20 border-cyan-400 text-cyan-200">
+                <span>🎄</span> ต้นคริสต์มาส 3D (Christmas Tree)
               </button>
-              <button data-model="earth" class="model-btn px-2.5 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-1.5">
-                <span>🌍</span> Earth Globe
+              <button data-model="earth" class="model-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-2">
+                <span>🌍</span> โลก 3D (Earth Globe)
               </button>
-              <button data-model="heart" class="model-btn px-2.5 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-1.5">
-                <span>❤️</span> Cyber Heart
+              <button data-model="heart" class="model-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-2">
+                <span>💖</span> หัวใจไซเบอร์ (Cyber Heart)
               </button>
-              <button data-model="saturn" class="model-btn px-2.5 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-1.5">
-                <span>🪐</span> Saturn Planet
+              <button data-model="saturn" class="model-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-2">
+                <span>🪐</span> ดาวเสาร์และวงแหวน (Saturn Planet)
               </button>
-              <button data-model="knot" class="model-btn col-span-2 px-2.5 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-1.5">
-                <span>🌀</span> Sacred Torus Knot
+              <button data-model="knot" class="model-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-2">
+                <span>🐉</span> รูปทรงเรขาคณิต 3 มิติ (Sacred Knot)
               </button>
             </div>
           </div>
 
-          <!-- Custom Cinematic Text -->
+          <!-- 2. Cinematic Text & Presets -->
           <div>
-            <label for="cinematic-text-input" class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 font-semibold">Cinematic Caption</label>
-            <div class="flex gap-1.5">
+            <label for="cinematic-text-input" class="block text-[11px] text-slate-300 mb-1 font-semibold">2. ข้อความ Cinematic ด้านล่าง</label>
+            <div class="flex gap-1.5 mb-1.5">
               <input
                 id="cinematic-text-input"
                 type="text"
-                maxlength="32"
+                maxlength="30"
                 value="MERRY CHRISTMAS 2026"
+                placeholder="พิมพ์ข้อความ..."
                 class="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-amber-300 font-bold tracking-wider text-xs focus:outline-none focus:border-cyan-400"
               />
               <button
                 id="apply-text-btn"
-                class="px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/60 text-cyan-300 font-semibold text-xs transition"
+                class="px-3 py-1.5 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400/60 text-cyan-200 font-semibold text-xs transition shrink-0"
               >
-                Replay
+                ตกลง
               </button>
+            </div>
+            <!-- Quick Text Presets -->
+            <div class="flex flex-wrap gap-1">
+              <button type="button" data-preset="MERRY CHRISTMAS 2026" class="preset-chip px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[10px] text-slate-300 hover:border-amber-400">🎄 MERRY CHRISTMAS 2026</button>
+              <button type="button" data-preset="HAPPY NEW YEAR 2026" class="preset-chip px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[10px] text-slate-300 hover:border-amber-400">🎆 HAPPY NEW YEAR 2026</button>
+              <button type="button" data-preset="I LOVE YOU FOREVER" class="preset-chip px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[10px] text-slate-300 hover:border-amber-400">💖 I LOVE YOU</button>
             </div>
           </div>
 
-          <!-- Color Theme Selector -->
+          <!-- 3. Color Themes -->
           <div>
-            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1.5 font-semibold">Color Palette Theme</label>
+            <label class="block text-[11px] text-slate-300 mb-1.5 font-semibold">3. ธีมสี (Color Theme)</label>
             <div class="grid grid-cols-2 gap-1.5" id="theme-buttons">
-              <button data-theme="holiday" class="theme-btn px-2.5 py-1.5 rounded-lg border bg-emerald-500/20 border-emerald-400 text-emerald-200 text-[11px] font-medium transition">
-                ✨ Classic Holiday
+              <button data-theme="holiday" class="theme-btn px-2.5 py-1.5 rounded-lg border bg-emerald-500/20 border-emerald-400 text-emerald-200 text-[11px] font-medium transition text-left">
+                🎄 คลาสสิกคริสต์มาส
               </button>
-              <button data-theme="cyberpunk" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition">
-                🔮 Cyberpunk Neon
+              <button data-theme="cyberpunk" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition text-left">
+                🔮 ไซเบอร์พังก์นีออน
               </button>
-              <button data-theme="matrix" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition">
-                📟 Matrix Emerald
+              <button data-theme="gold" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition text-left">
+                ✨ ทองคำหรูหรา
               </button>
-              <button data-theme="solar" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition">
-                ☀️ Solar Gold
+              <button data-theme="aurora" class="theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition text-left">
+                🌌 ออโรร่าเหนือ
               </button>
             </div>
           </div>
 
-          <!-- Sliders -->
-          <div class="grid grid-cols-2 gap-3 pt-1">
+          <!-- 4. Sliders -->
+          <div class="space-y-2.5 pt-1">
             <div>
-              <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                <span>Rotation Speed</span>
-                <span id="val-speed" class="text-cyan-300">1.0x</span>
+              <div class="flex justify-between text-[11px] text-slate-300 mb-1">
+                <span>ความเร็วการหมุน</span>
+                <span id="val-speed" class="text-cyan-300 font-semibold">1.0x</span>
               </div>
               <input id="slider-speed" type="range" min="0" max="3" step="0.1" value="1.0" />
             </div>
 
             <div>
-              <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                <span>ASCII Density</span>
-                <span id="val-density" class="text-cyan-300">100%</span>
+              <div class="flex justify-between text-[11px] text-slate-300 mb-1">
+                <span>ความหนาแน่นตัวอักษร ASCII</span>
+                <span id="val-density" class="text-cyan-300 font-semibold">100%</span>
               </div>
-              <input id="slider-density" type="range" min="0.55" max="1.45" step="0.05" value="1.0" />
+              <input id="slider-density" type="range" min="0.6" max="1.4" step="0.05" value="1.0" />
             </div>
 
             <div>
-              <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                <span>Starfield Count</span>
-                <span id="val-stars" class="text-cyan-300">160</span>
+              <div class="flex justify-between text-[11px] text-slate-300 mb-1">
+                <span>จำนวนดาวพื้นหลัง</span>
+                <span id="val-stars" class="text-cyan-300 font-semibold">150</span>
               </div>
-              <input id="slider-stars" type="range" min="40" max="320" step="10" value="160" />
+              <input id="slider-stars" type="range" min="40" max="300" step="10" value="150" />
             </div>
 
             <div>
-              <div class="flex justify-between text-[10px] text-slate-400 mb-1">
-                <span>Glow Intensity</span>
-                <span id="val-glow" class="text-cyan-300">1.0x</span>
+              <div class="flex justify-between text-[11px] text-slate-300 mb-1">
+                <span>ความสว่างแสง Glow</span>
+                <span id="val-glow" class="text-cyan-300 font-semibold">1.0x</span>
               </div>
               <input id="slider-glow" type="range" min="0" max="1.8" step="0.1" value="1.0" />
             </div>
           </div>
 
-          <!-- Particles Toggle & Playback Actions -->
-          <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
-            <label class="flex items-center gap-2 cursor-pointer">
+          <!-- 5. Toggles -->
+          <div class="space-y-2 pt-2 border-t border-slate-800/80">
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-[11px] text-amber-300 font-semibold">🎵 เพลงประกอบน่ารักๆ (กล่องดนตรี 8-Bit)</span>
+              <input id="toggle-music" type="checkbox" class="w-4 h-4 accent-amber-400 rounded" />
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-[11px] text-slate-300">❄️ อนุภาคและหิมะ (Particles)</span>
               <input id="toggle-particles" type="checkbox" checked class="w-4 h-4 accent-cyan-400 rounded" />
-              <span class="text-xs text-slate-300">Ambient Particles & Snow</span>
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-[11px] text-slate-300">🌠 ดาวตก (Shooting Stars)</span>
+              <input id="toggle-shooting" type="checkbox" checked class="w-4 h-4 accent-cyan-400 rounded" />
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-[11px] text-slate-300">✨ แสงระเบิดขนาดเล็ก (Micro Bursts)</span>
+              <input id="toggle-bursts" type="checkbox" checked class="w-4 h-4 accent-cyan-400 rounded" />
             </label>
           </div>
         </div>
       </div>
 
       <!-- Bottom Action Buttons -->
-      <div class="grid grid-cols-3 gap-2 pt-3 mt-3 border-t border-slate-800">
+      <div class="grid grid-cols-2 gap-2 pt-3 mt-3 border-t border-slate-800">
         <button
           id="btn-play-pause"
-          class="py-2 px-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 font-bold text-xs transition"
+          class="py-2 px-2.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 font-bold text-[11px] transition"
         >
-          ⏸ Pause
+          ⏸ หยุดชั่วคราว
         </button>
         <button
-          id="btn-reset"
-          class="py-2 px-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 font-bold text-xs transition"
+          id="btn-replay"
+          class="py-2 px-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 font-bold text-[11px] transition"
         >
-          ↺ Replay
+          ↺ เล่นการก่อตัวใหม่
         </button>
         <button
-          id="btn-hide-ui"
-          class="py-2 px-2 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400/60 text-cyan-200 font-bold text-xs transition"
+          id="btn-reset-defaults"
+          class="col-span-2 py-1.5 px-2.5 rounded-lg bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 font-medium text-[11px] transition"
         >
-          🎬 Record
+          🔄 รีเซ็ตการตั้งค่าทั้งหมด
+        </button>
+        <button
+          id="btn-record-mode"
+          class="col-span-2 py-2.5 px-3 rounded-lg bg-cyan-500/25 hover:bg-cyan-500/40 border border-cyan-400/60 text-cyan-200 font-bold text-xs transition"
+        >
+          🎬 โหมดบันทึกวิดีโอ 9:16 (ซ่อนปุ่มทั้งหมด)
         </button>
       </div>
     </div>
 
   </div>
 
-  <!-- Modular JavaScript Engine -->
   <script>
     /**
      * ============================================================================
-     * MODULE 1: STATE & CONFIGURATION (settings.js)
-     * Centralized reactive state for the 3D ASCII Cinema Engine
+     * 1. CUTE MUSIC BOX / 8-BIT SYNTHESIZER ENGINE (Web Audio API - Zero External Files)
+     * ============================================================================
+     */
+    class CuteMusicBoxEngine {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.timerId = null;
+        this.stepIndex = 0;
+
+        // Cute gentle melody ("We Wish You a Merry Christmas" + Music Box Twinkle)
+        // [Frequency in Hz, Duration in 16th-note steps, Bass Frequency in Hz]
+        this.melody = [
+          [261.63, 2, 130.81], // C4
+          [349.23, 2, 174.61], // F4
+          [349.23, 1, 0],      // F4
+          [392.00, 1, 0],      // G4
+          [349.23, 1, 0],      // F4
+          [329.63, 1, 0],      // E4
+          [293.66, 2, 146.83], // D4
+          [293.66, 2, 0],      // D4
+          [293.66, 2, 146.83], // D4
+          [392.00, 2, 196.00], // G4
+          [392.00, 1, 0],      // G4
+          [440.00, 1, 0],      // A4
+          [392.00, 1, 0],      // G4
+          [349.23, 1, 0],      // F4
+          [329.63, 2, 130.81], // E4
+          [261.63, 2, 0],      // C4
+          [261.63, 2, 130.81], // C4
+          [440.00, 2, 174.61], // A4
+          [440.00, 1, 0],      // A4
+          [466.16, 1, 0],      // Bb4
+          [440.00, 1, 0],      // A4
+          [392.00, 1, 0],      // G4
+          [349.23, 2, 146.83], // F4
+          [293.66, 2, 0],      // D4
+          [261.63, 1, 130.81], // C4
+          [261.63, 1, 0],      // C4
+          [293.66, 2, 146.83], // D4
+          [392.00, 2, 196.00], // G4
+          [329.63, 2, 130.81], // E4
+          [349.23, 4, 174.61]  // F4
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playBellNote(freq, durationSec, isBass = false) {
+        if (!this.ctx || freq <= 0) return;
+        const now = this.ctx.currentTime;
+
+        const osc = this.ctx.createOscillator();
+        const overtone = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        // Soft music-box bell timbre (sine + octave shimmer)
+        osc.type = isBass ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        overtone.type = 'sine';
+        overtone.frequency.setValueAtTime(freq * 2, now);
+
+        const overtoneGain = this.ctx.createGain();
+        overtoneGain.gain.setValueAtTime(isBass ? 0.01 : 0.035, now);
+        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + durationSec * 0.6);
+
+        const peakGain = isBass ? 0.055 : 0.09;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(peakGain, now + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + durationSec * 1.35);
+
+        osc.connect(gain);
+        overtone.connect(overtoneGain);
+        overtoneGain.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        overtone.start(now);
+        osc.stop(now + durationSec * 1.4);
+        overtone.stop(now + durationSec * 1.4);
+      }
+
+      start() {
+        this.initContext();
+        if (!this.ctx || this.isPlaying) return;
+        this.isPlaying = true;
+        this.scheduleNext();
+      }
+
+      scheduleNext() {
+        if (!this.isPlaying) return;
+        const [freq, steps, bassFreq] = this.melody[this.stepIndex % this.melody.length];
+        const stepMs = 210; // Gentle cute tempo
+        const durSec = (steps * stepMs) / 1000;
+
+        this.playBellNote(freq, durSec, false);
+        if (bassFreq > 0) {
+          this.playBellNote(bassFreq, durSec * 1.6, true);
+        }
+
+        this.stepIndex++;
+        this.timerId = setTimeout(() => this.scheduleNext(), steps * stepMs);
+      }
+
+      stop() {
+        this.isPlaying = false;
+        if (this.timerId) {
+          clearTimeout(this.timerId);
+          this.timerId = null;
+        }
+      }
+
+      toggle() {
+        if (this.isPlaying) {
+          this.stop();
+        } else {
+          this.start();
+        }
+        return this.isPlaying;
+      }
+    }
+
+    /**
+     * ============================================================================
+     * 2. APPLICATION STATE & THEMES
      * ============================================================================
      */
     const AppState = {
-      model: 'tree', // 'tree' | 'earth' | 'heart' | 'saturn' | 'knot'
+      model: 'tree',
       caption: 'MERRY CHRISTMAS 2026',
-      theme: 'holiday', // 'holiday' | 'cyberpunk' | 'matrix' | 'solar'
+      theme: 'holiday',
       rotationSpeed: 1.0,
       density: 1.0,
-      starCount: 160,
+      starCount: 150,
       glowIntensity: 1.0,
       particlesEnabled: true,
+      shootingStarsEnabled: true,
+      microBurstsEnabled: true,
+      recordingMode: false,
       isPlaying: true,
 
-      // Interactive camera / rotation offsets
+      // 3D Camera Angles & Drag Inertia
       rotX: 0.12,
       rotY: 0,
       rotZ: 0,
@@ -454,15 +606,14 @@
       lastPointerY: 0,
       velocityY: 0,
 
-      // Timeline & Animation Phases
+      // Animation Timeline
       elapsedTime: 0,
-      formationProgress: 0, // 0 -> 1 builds the 3D object from bottom/center
-      textRevealProgress: 0, // 0 -> 1 reveals cinematic typography
-      activeCodeLine: 0,
+      formationProgress: 0,
+      textRevealProgress: 0,
       fps: 60
     };
 
-    const MODEL_DEFAULT_CAPTIONS = {
+    const MODEL_CAPTIONS = {
       tree: 'MERRY CHRISTMAS 2026',
       earth: 'PLANET EARTH • 3D ASCII',
       heart: 'DIGITAL HEARTBEAT 2026',
@@ -479,7 +630,7 @@
         textPrimary: '#fbbf24',
         textSecondary: '#ef4444',
         particle: '#f8fafc',
-        bgGlow: 'rgba(16, 185, 129, 0.08)'
+        bgGlow: 'rgba(16, 185, 129, 0.10)'
       },
       cyberpunk: {
         primary: ['#0284c7', '#06b6d4', '#22d3ee', '#67e8f9'],
@@ -489,74 +640,64 @@
         textPrimary: '#22d3ee',
         textSecondary: '#f472b6',
         particle: '#e879f9',
-        bgGlow: 'rgba(6, 182, 212, 0.1)'
+        bgGlow: 'rgba(6, 182, 212, 0.12)'
       },
-      matrix: {
-        primary: ['#065f46', '#059669', '#10b981', '#4ade80'],
-        secondary: ['#bbf7d0', '#86efac', '#22c55e'],
-        accentA: '#a3e635',
-        accentB: '#34d399',
-        textPrimary: '#4ade80',
-        textSecondary: '#bbf7d0',
-        particle: '#4ade80',
-        bgGlow: 'rgba(16, 185, 129, 0.1)'
-      },
-      solar: {
+      gold: {
         primary: ['#b45309', '#d97706', '#f59e0b', '#fbbf24'],
-        secondary: ['#fef08a', '#fde047', '#fb923c'],
+        secondary: ['#fef08a', '#fde047', '#ffffff'],
         accentA: '#ef4444',
         accentB: '#fef9c3',
         textPrimary: '#fde047',
         textSecondary: '#fb923c',
         particle: '#fef08a',
-        bgGlow: 'rgba(245, 158, 11, 0.09)'
+        bgGlow: 'rgba(245, 158, 11, 0.11)'
+      },
+      aurora: {
+        primary: ['#0d9488', '#14b8a6', '#2dd4bf', '#5eead4'],
+        secondary: ['#c084fc', '#e879f9', '#818cf8'],
+        accentA: '#38bdf8',
+        accentB: '#f472b6',
+        textPrimary: '#5eead4',
+        textSecondary: '#c084fc',
+        particle: '#bae6fd',
+        bgGlow: 'rgba(45, 212, 191, 0.11)'
       }
     };
 
     /**
      * ============================================================================
-     * MODULE 2: 3D PROCEDURAL ASCII OBJECT GENERATORS (objects.js)
-     * Generates 3D point clouds with surface normals, roles, and ASCII glyphs
+     * 3. 3D PROCEDURAL ASCII GEOMETRY GENERATORS
      * ============================================================================
      */
     class AsciiObjectFactory {
       static generate(modelType, density = 1.0) {
         switch (modelType) {
-          case 'earth':
-            return this.createEarthGlobe(density);
-          case 'heart':
-            return this.createCyberHeart(density);
-          case 'saturn':
-            return this.createSaturnPlanet(density);
-          case 'knot':
-            return this.createTorusKnot(density);
+          case 'earth': return this.createEarthGlobe(density);
+          case 'heart': return this.createCyberHeart(density);
+          case 'saturn': return this.createSaturnPlanet(density);
+          case 'knot': return this.createTorusKnot(density);
           case 'tree':
-          default:
-            return this.createChristmasTree(density);
+          default: return this.createChristmasTree(density);
         }
       }
 
-      /**
-       * 1. CHRISTMAS TREE: Layered pine boughs, golden 3D star, blinking lights, ornaments, & gift boxes
-       */
       static createChristmasTree(density) {
         const points = [];
         const tiers = 7;
-        const treeHeight = 250;
-        const startY = -125; // Top of foliage
+        const treeHeight = 245;
+        const startY = -122;
 
         // Trunk
-        const trunkRows = Math.round(10 * density);
-        const trunkCols = Math.round(14 * density);
+        const trunkRows = Math.max(6, Math.round(9 * density));
+        const trunkCols = Math.max(10, Math.round(14 * density));
         for (let r = 0; r < trunkRows; r++) {
-          const y = 115 + (r / trunkRows) * 32;
+          const y = 114 + (r / trunkRows) * 30;
           for (let c = 0; c < trunkCols; c++) {
             const angle = (c / trunkCols) * Math.PI * 2;
-            const rad = 16;
             points.push({
-              x: Math.cos(angle) * rad,
+              x: Math.cos(angle) * 15,
               y,
-              z: Math.sin(angle) * rad,
+              z: Math.sin(angle) * 15,
               nx: Math.cos(angle),
               ny: 0,
               nz: Math.sin(angle),
@@ -567,29 +708,26 @@
           }
         }
 
-        // Layered Conical Foliage Tiers
+        // Layered Pine Foliage
         for (let t = 0; t < tiers; t++) {
           const tierProgress = t / tiers;
           const tierTopY = startY + tierProgress * (treeHeight * 0.82);
           const tierHeight = (treeHeight / tiers) * 1.48;
-          const maxRadius = 26 + tierProgress * 92;
-          const rings = Math.max(5, Math.round(10 * density));
+          const maxRadius = 25 + tierProgress * 90;
+          const rings = Math.max(5, Math.round(9 * density));
 
           for (let r = 0; r <= rings; r++) {
             const v = r / rings;
             const y = tierTopY + v * tierHeight;
-            // Slight upward curve at bough tips
             const radius = v * maxRadius * (1 + 0.08 * Math.sin(v * Math.PI));
-            const circumference = Math.max(8, Math.round((2 * Math.PI * radius) / (7.5 / density)));
+            const circumference = Math.max(8, Math.round((2 * Math.PI * radius) / (8.0 / density)));
 
             for (let c = 0; c < circumference; c++) {
               const theta = (c / circumference) * Math.PI * 2 + t * 0.45;
-              // Scalloped pine branch wave
               const scallop = 1 + 0.12 * Math.sin(theta * (5 + t));
               const px = Math.cos(theta) * radius * scallop;
               const pz = Math.sin(theta) * radius * scallop;
 
-              // Determine if this point is an ornament / fairy light or pine foliage
               const hash = Math.abs(Math.sin(t * 91.7 + r * 37.3 + c * 19.1));
               let role = 'foliage';
               let char = hash > 0.65 ? '#' : hash > 0.35 ? '%' : '&';
@@ -615,24 +753,22 @@
                 char,
                 role,
                 lightIndex,
-                shadeSeed: hash,
                 order: 1 - (y - startY) / (treeHeight + 40)
               });
             }
           }
         }
 
-        // Golden 3D Star Topper at (0, -142, 0)
-        const starY = startY - 18;
-        const starPoints = 5;
+        // Golden 3D Star Topper
+        const starY = startY - 17;
         for (let layer = -1; layer <= 1; layer++) {
-          const zDepth = layer * 4.5;
+          const zDepth = layer * 4;
           const scale = layer === 0 ? 1.0 : 0.65;
-          for (let i = 0; i < starPoints * 2; i++) {
+          for (let i = 0; i < 10; i++) {
             const isOuter = i % 2 === 0;
-            const r = (isOuter ? 24 : 10) * scale;
-            const angle = (i * Math.PI) / starPoints - Math.PI / 2;
-            const steps = Math.round(5 * density);
+            const r = (isOuter ? 23 : 10) * scale;
+            const angle = (i * Math.PI) / 5 - Math.PI / 2;
+            const steps = Math.max(3, Math.round(5 * density));
             for (let s = 1; s <= steps; s++) {
               const frac = s / steps;
               points.push({
@@ -650,14 +786,13 @@
           }
         }
 
-        // Gift Boxes at the base of the tree
+        // Red & Blue Gift Boxes at Base
         const gifts = [
-          { cx: -48, cy: 135, cz: 32, w: 28, h: 24, d: 28, colorRole: 'giftRed' },
-          { cx: 46, cy: 137, cz: 26, w: 26, h: 20, d: 26, colorRole: 'giftBlue' },
-          { cx: 12, cy: 139, cz: -44, w: 24, h: 18, d: 24, colorRole: 'giftGold' }
+          { cx: -46, cy: 133, cz: 30, w: 26, h: 22, d: 26, colorRole: 'giftRed' },
+          { cx: 44, cy: 135, cz: 24, w: 24, h: 18, d: 24, colorRole: 'giftBlue' },
+          { cx: 10, cy: 137, cz: -42, w: 22, h: 16, d: 22, colorRole: 'giftGold' }
         ];
-
-        const boxStep = Math.max(4, Math.round(6 / density));
+        const boxStep = Math.max(4, Math.round(6.5 / density));
         gifts.forEach((g) => {
           for (let dx = -g.w / 2; dx <= g.w / 2; dx += boxStep) {
             for (let dy = -g.h / 2; dy <= g.h / 2; dy += boxStep) {
@@ -666,7 +801,6 @@
                 const onEdgeY = Math.abs(Math.abs(dy) - g.h / 2) < boxStep;
                 const onEdgeZ = Math.abs(Math.abs(dz) - g.d / 2) < boxStep;
                 if (!onEdgeX && !onEdgeY && !onEdgeZ) continue;
-
                 const isRibbon = Math.abs(dx) < 3.5 || Math.abs(dz) < 3.5;
                 points.push({
                   x: g.cx + dx,
@@ -687,26 +821,22 @@
         return points;
       }
 
-      /**
-       * 2. EARTH GLOBE: Rotating 3D sphere with procedural continents, oceans & orbital ring
-       */
       static createEarthGlobe(density) {
         const points = [];
-        const radius = 112;
-        const latSteps = Math.round(34 * density);
+        const radius = 110;
+        const latSteps = Math.max(16, Math.round(32 * density));
 
         for (let i = 1; i < latSteps; i++) {
           const phi = (i / latSteps) * Math.PI;
           const y = -Math.cos(phi) * radius;
           const ringRadius = Math.sin(phi) * radius;
-          const lonSteps = Math.max(8, Math.round((2 * Math.PI * ringRadius) / (7.2 / density)));
+          const lonSteps = Math.max(8, Math.round((2 * Math.PI * ringRadius) / (7.6 / density)));
 
           for (let j = 0; j < lonSteps; j++) {
             const theta = (j / lonSteps) * Math.PI * 2;
             const x = Math.cos(theta) * ringRadius;
             const z = Math.sin(theta) * ringRadius;
 
-            // Procedural harmonic noise for realistic continental landmasses
             const continentNoise =
               Math.sin(theta * 2.0 + 0.5) * Math.cos(phi * 2.5) +
               0.5 * Math.sin(theta * 5.0 - phi * 3.0) +
@@ -726,79 +856,61 @@
             }
 
             points.push({
-              x,
-              y,
-              z,
+              x, y, z,
               nx: x / radius,
               ny: y / radius,
               nz: z / radius,
               char,
               role,
-              shadeSeed: Math.abs(continentNoise),
               order: 1 - i / latSteps
             });
           }
         }
 
-        // Orbital Satellite Ring
-        const ringCount = Math.round(64 * density);
+        const ringCount = Math.max(32, Math.round(60 * density));
         for (let k = 0; k < ringCount; k++) {
           const a = (k / ringCount) * Math.PI * 2;
-          const rx = Math.cos(a) * 145;
-          const rz = Math.sin(a) * 145;
-          const ry = Math.sin(a * 2) * 18;
           points.push({
-            x: rx,
-            y: ry,
-            z: rz,
-            nx: 0,
-            ny: 1,
-            nz: 0,
+            x: Math.cos(a) * 142,
+            y: Math.sin(a * 2) * 18,
+            z: Math.sin(a) * 142,
+            nx: 0, ny: 1, nz: 0,
             char: k % 8 === 0 ? '★' : '+',
             role: k % 8 === 0 ? 'star' : 'light',
             lightIndex: k % 4,
             order: 0.5
           });
         }
-
         return points;
       }
 
-      /**
-       * 3. CYBER HEART: Parametric 3D volumetric heart with glowing contours
-       */
       static createCyberHeart(density) {
         const points = [];
-        const uSteps = Math.round(48 * density);
-        const vSteps = Math.round(24 * density);
+        const uSteps = Math.max(24, Math.round(46 * density));
+        const vSteps = Math.max(12, Math.round(22 * density));
 
         for (let i = 0; i < uSteps; i++) {
           const t = (i / uSteps) * Math.PI * 2;
-          // Classic parametric heart contour
           const hx = 16 * Math.pow(Math.sin(t), 3);
           const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
           for (let j = 1; j < vSteps; j++) {
             const v = (j / vSteps) * Math.PI;
             const shell = Math.sin(v);
-            const z = Math.cos(v) * 48 * (1 - 0.25 * Math.abs(hy) / 18);
-
-            const scale = 6.8;
+            const z = Math.cos(v) * 46 * (1 - 0.25 * Math.abs(hy) / 18);
+            const scale = 6.6;
             const x = hx * shell * scale;
             const y = (hy * shell * scale) - 10;
-
             const isEdge = Math.abs(Math.cos(v)) < 0.22;
+
             points.push({
-              x,
-              y,
-              z,
+              x, y, z,
               nx: hx * 0.06,
               ny: hy * 0.06,
               nz: Math.cos(v),
               char: isEdge ? '@' : (i + j) % 2 === 0 ? '#' : '%',
               role: isEdge ? 'star' : 'giftRed',
               lightIndex: (i + j) % 4,
-              shadeSeed: shell,
               order: 1 - (y + 130) / 260
             });
           }
@@ -806,20 +918,16 @@
         return points;
       }
 
-      /**
-       * 4. SATURN PLANET: Banded gas giant sphere + tilted multi-band ASCII ring system
-       */
       static createSaturnPlanet(density) {
         const points = [];
-        const radius = 78;
-        const latSteps = Math.round(28 * density);
+        const radius = 76;
+        const latSteps = Math.max(14, Math.round(26 * density));
 
-        // Planet Sphere
         for (let i = 1; i < latSteps; i++) {
           const phi = (i / latSteps) * Math.PI;
           const y = -Math.cos(phi) * radius;
           const r = Math.sin(phi) * radius;
-          const lonSteps = Math.max(8, Math.round((2 * Math.PI * r) / (7.5 / density)));
+          const lonSteps = Math.max(8, Math.round((2 * Math.PI * r) / (7.8 / density)));
 
           for (let j = 0; j < lonSteps; j++) {
             const theta = (j / lonSteps) * Math.PI * 2;
@@ -828,42 +936,34 @@
             const band = Math.sin(phi * 14);
 
             points.push({
-              x,
-              y,
-              z,
+              x, y, z,
               nx: x / radius,
               ny: y / radius,
               nz: z / radius,
               char: band > 0.2 ? '#' : band > -0.3 ? '%' : '&',
               role: band > 0.3 ? 'star' : 'giftGold',
-              shadeSeed: (band + 1) * 0.5,
               order: 1 - i / latSteps
             });
           }
         }
 
-        // Tilted Concentric Rings
-        const ringRadii = [102, 112, 122, 136, 146, 156];
+        const ringRadii = [100, 112, 124, 138, 150];
         const tilt = 0.42;
         ringRadii.forEach((rr, idx) => {
-          const count = Math.round((2 * Math.PI * rr) / (6.8 / density));
+          const count = Math.max(24, Math.round((2 * Math.PI * rr) / (7.2 / density)));
           for (let k = 0; k < count; k++) {
             const theta = (k / count) * Math.PI * 2;
             const rx = Math.cos(theta) * rr;
             const rz0 = Math.sin(theta) * rr;
-            // Apply axial tilt
-            const ry = rz0 * Math.sin(tilt);
-            const rz = rz0 * Math.cos(tilt);
-
             points.push({
               x: rx,
-              y: ry,
-              z: rz,
+              y: rz0 * Math.sin(tilt),
+              z: rz0 * Math.cos(tilt),
               nx: 0,
               ny: Math.cos(tilt),
               nz: -Math.sin(tilt),
               char: idx % 2 === 0 ? '*' : '+',
-              role: idx === 3 ? 'star' : 'light',
+              role: idx === 2 ? 'star' : 'light',
               lightIndex: idx % 4,
               order: 0.5
             });
@@ -873,30 +973,25 @@
         return points;
       }
 
-      /**
-       * 5. SACRED TORUS KNOT: Complex (p=3, q=4) 3D mathematical knot
-       */
       static createTorusKnot(density) {
         const points = [];
-        const p = 3;
-        const q = 4;
-        const steps = Math.round(220 * density);
-        const tubeSegments = Math.max(6, Math.round(10 * density));
+        const p = 3, q = 4;
+        const steps = Math.max(110, Math.round(200 * density));
+        const tubeSegments = Math.max(6, Math.round(9 * density));
         const tubeRadius = 18;
 
         for (let i = 0; i < steps; i++) {
           const u = (i / steps) * Math.PI * 2;
-          const r = 68 + 28 * Math.cos(q * u);
+          const r = 66 + 26 * Math.cos(q * u);
           const cx = r * Math.cos(p * u);
           const cy = r * Math.sin(p * u);
-          const cz = 42 * Math.sin(q * u);
+          const cz = 40 * Math.sin(q * u);
 
-          // Approximate tangent
           const uNext = u + 0.02;
-          const rNext = 68 + 28 * Math.cos(q * uNext);
+          const rNext = 66 + 26 * Math.cos(q * uNext);
           const tx = rNext * Math.cos(p * uNext) - cx;
           const ty = rNext * Math.sin(p * uNext) - cy;
-          const tz = 42 * Math.sin(q * uNext) - cz;
+          const tz = 40 * Math.sin(q * uNext) - cz;
           const tLen = Math.hypot(tx, ty, tz) || 1;
           const nx0 = -ty / tLen;
           const ny0 = tx / tLen;
@@ -917,7 +1012,6 @@
               char: j % 2 === 0 ? '@' : '#',
               role: 'light',
               lightIndex: Math.floor((i / steps) * 4) % 4,
-              shadeSeed: i / steps,
               order: i / steps
             });
           }
@@ -928,8 +1022,7 @@
 
     /**
      * ============================================================================
-     * MODULE 3: PARTICLE & STARFIELD SYSTEM (particles.js)
-     * Manages twinkling background stars, shooting stars, snow, & orbital sparks
+     * 4. PARTICLE & STARFIELD ENGINE
      * ============================================================================
      */
     class ParticleEngine {
@@ -939,7 +1032,7 @@
         this.ambientParticles = [];
         this.burstParticles = [];
         this.initStars(AppState.starCount);
-        this.initAmbientParticles(65);
+        this.initAmbientParticles(60);
       }
 
       initStars(count) {
@@ -948,7 +1041,7 @@
           this.stars.push({
             nx: Math.random(),
             ny: Math.random(),
-            size: Math.random() < 0.2 ? 2.1 : 1.2,
+            size: Math.random() < 0.22 ? 2.0 : 1.15,
             phase: Math.random() * Math.PI * 2,
             speed: 1.5 + Math.random() * 3.5,
             isCross: Math.random() < 0.14,
@@ -961,50 +1054,44 @@
         this.ambientParticles = [];
         const glyphs = ['*', '+', '·', '✦', '•', '°'];
         for (let i = 0; i < count; i++) {
-          this.ambientParticles.push(this.createAmbientParticle(true, glyphs));
+          const isOrbiting = Math.random() < 0.45;
+          this.ambientParticles.push({
+            isOrbiting,
+            nx: Math.random(),
+            ny: Math.random(),
+            vx: (Math.random() - 0.5) * 0.04,
+            vy: 0.05 + Math.random() * 0.08,
+            angle: Math.random() * Math.PI * 2,
+            orbitRadius: 68 + Math.random() * 90,
+            orbitY: (Math.random() - 0.5) * 250,
+            orbitSpeed: (0.4 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1),
+            glyph: glyphs[Math.floor(Math.random() * glyphs.length)],
+            size: 8 + Math.random() * 5,
+            alpha: 0.4 + Math.random() * 0.6,
+            phase: Math.random() * Math.PI * 2
+          });
         }
       }
 
-      createAmbientParticle(randomY = false, glyphs = ['*', '+', '·', '✦', '•']) {
-        const isOrbiting = Math.random() < 0.45;
-        return {
-          isOrbiting,
-          // Falling snow / rising spark properties
-          nx: Math.random(),
-          ny: randomY ? Math.random() : -0.05,
-          vx: (Math.random() - 0.5) * 0.04,
-          vy: 0.05 + Math.random() * 0.08,
-          // Orbital properties around 3D object
-          angle: Math.random() * Math.PI * 2,
-          orbitRadius: 70 + Math.random() * 95,
-          orbitY: (Math.random() - 0.5) * 260,
-          orbitSpeed: (0.4 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1),
-          glyph: glyphs[Math.floor(Math.random() * glyphs.length)],
-          size: 8 + Math.random() * 5,
-          alpha: 0.35 + Math.random() * 0.65,
-          phase: Math.random() * Math.PI * 2
-        };
-      }
-
-      triggerSparkBurst(count = 28) {
+      triggerSparkBurst(count = 26, normX = 0, normY = -20) {
+        if (!AppState.microBurstsEnabled) return;
         for (let i = 0; i < count; i++) {
           const angle = Math.random() * Math.PI * 2;
-          const speed = 45 + Math.random() * 140;
+          const speed = 40 + Math.random() * 135;
           this.burstParticles.push({
-            x: 0,
-            y: -30,
+            x: normX,
+            y: normY,
             vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed - 30,
+            vy: Math.sin(angle) * speed - 25,
             life: 1.0,
-            decay: 0.7 + Math.random() * 0.6,
+            decay: 0.75 + Math.random() * 0.6,
             glyph: Math.random() < 0.5 ? '✦' : '*'
           });
         }
       }
 
       update(dt, time) {
-        // Spawn occasional shooting star
-        if (Math.random() < dt * 0.45 && this.shootingStars.length < 2) {
+        if (AppState.shootingStarsEnabled && Math.random() < dt * 0.45 && this.shootingStars.length < 2) {
           this.shootingStars.push({
             nx: 0.1 + Math.random() * 0.8,
             ny: 0.05 + Math.random() * 0.35,
@@ -1015,7 +1102,6 @@
           });
         }
 
-        // Update shooting stars
         for (let i = this.shootingStars.length - 1; i >= 0; i--) {
           const s = this.shootingStars[i];
           s.nx += s.vx * dt;
@@ -1024,13 +1110,12 @@
           if (s.life <= 0) this.shootingStars.splice(i, 1);
         }
 
-        // Update ambient snow / sparks
         if (AppState.particlesEnabled) {
-          for (let p of this.ambientParticles) {
+          for (const p of this.ambientParticles) {
             if (p.isOrbiting) {
               p.angle += p.orbitSpeed * dt;
               p.orbitY -= dt * 14;
-              if (p.orbitY < -155) p.orbitY = 155;
+              if (p.orbitY < -150) p.orbitY = 150;
             } else {
               p.nx += p.vx * dt + Math.sin(time * 1.5 + p.phase) * 0.015 * dt;
               p.ny += p.vy * dt;
@@ -1042,29 +1127,26 @@
           }
         }
 
-        // Update burst particles
         for (let i = this.burstParticles.length - 1; i >= 0; i--) {
           const b = this.burstParticles[i];
           b.x += b.vx * dt;
           b.y += b.vy * dt;
-          b.vy += 65 * dt; // subtle gravity
+          b.vy += 65 * dt;
           b.life -= b.decay * dt;
           if (b.life <= 0) this.burstParticles.splice(i, 1);
         }
       }
 
       renderBackground(ctx, width, height, time) {
-        // Twinkling Stars
         for (const star of this.stars) {
           const twinkle = 0.25 + 0.75 * (0.5 + 0.5 * Math.sin(time * star.speed + star.phase));
           const sx = star.nx * width;
           const sy = star.ny * height;
 
-          ctx.save();
           ctx.globalAlpha = twinkle;
           ctx.fillStyle = star.hue;
 
-          if (star.isCross && twinkle > 0.72) {
+          if (star.isCross && twinkle > 0.74) {
             ctx.font = '10px "JetBrains Mono", monospace';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1074,38 +1156,36 @@
             ctx.arc(sx, sy, star.size, 0, Math.PI * 2);
             ctx.fill();
           }
-          ctx.restore();
         }
+        ctx.globalAlpha = 1;
 
-        // Shooting Stars
-        for (const s of this.shootingStars) {
-          const x1 = s.nx * width;
-          const y1 = s.ny * height;
-          const norm = Math.hypot(s.vx, s.vy) || 1;
-          const x2 = x1 - (s.vx / norm) * s.length;
-          const y2 = y1 - (s.vy / norm) * s.length;
+        if (AppState.shootingStarsEnabled) {
+          for (const s of this.shootingStars) {
+            const x1 = s.nx * width;
+            const y1 = s.ny * height;
+            const norm = Math.hypot(s.vx, s.vy) || 1;
+            const x2 = x1 - (s.vx / norm) * s.length;
+            const y2 = y1 - (s.vy / norm) * s.length;
 
-          const grad = ctx.createLinearGradient(x1, y1, x2, y2);
-          grad.addColorStop(0, `rgba(255, 255, 255, ${s.life})`);
-          grad.addColorStop(0.4, `rgba(56, 189, 248, ${s.life * 0.6})`);
-          grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+            const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+            grad.addColorStop(0, `rgba(255, 255, 255, ${s.life})`);
+            grad.addColorStop(0.4, `rgba(56, 189, 248, ${s.life * 0.6})`);
+            grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
 
-          ctx.save();
-          ctx.strokeStyle = grad;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.stroke();
-          ctx.restore();
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+          }
         }
       }
 
-      renderForegroundParticles(ctx, width, height, centerX, centerY, scaleFactor, time) {
+      renderForeground(ctx, width, height, centerX, centerY, scaleFactor, time) {
         if (!AppState.particlesEnabled) return;
         const theme = THEMES[AppState.theme];
 
-        ctx.save();
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
@@ -1113,12 +1193,11 @@
           const pulse = 0.5 + 0.5 * Math.sin(time * 3 + p.phase);
           ctx.globalAlpha = p.alpha * (0.4 + 0.6 * pulse);
           ctx.fillStyle = p.isOrbiting ? theme.secondary[0] : theme.particle;
-          ctx.font = `${Math.round(p.size * scaleFactor)}px "JetBrains Mono", monospace`;
+          ctx.font = `${Math.max(8, Math.round(p.size * scaleFactor))}px "JetBrains Mono", monospace`;
 
           if (p.isOrbiting) {
             const ox = Math.cos(p.angle) * p.orbitRadius * scaleFactor;
             const oz = Math.sin(p.angle) * p.orbitRadius;
-            // Only draw front-half orbiting particles here
             if (oz > 0) {
               ctx.fillText(p.glyph, centerX + ox, centerY + p.orbitY * scaleFactor);
             }
@@ -1127,50 +1206,73 @@
           }
         }
 
-        // Spark Burst particles
         for (const b of this.burstParticles) {
           ctx.globalAlpha = Math.max(0, b.life);
           ctx.fillStyle = theme.secondary[0];
-          ctx.font = `${Math.round(13 * scaleFactor)}px "JetBrains Mono", monospace`;
+          ctx.font = `${Math.max(10, Math.round(13 * scaleFactor))}px "JetBrains Mono", monospace`;
           ctx.fillText(b.glyph, centerX + b.x * scaleFactor, centerY + b.y * scaleFactor);
         }
 
-        ctx.restore();
+        ctx.globalAlpha = 1;
       }
     }
 
     /**
      * ============================================================================
-     * MODULE 4: 3D ASCII MATHEMATICAL PROJECTION RENDERER (renderer.js)
-     * Handles 3D rotation matrices, perspective projection, depth sorting, & glow
+     * 5. SAFE 3D ASCII RENDERER (100% Black-Screen Proof & Safari GPU Friendly)
      * ============================================================================
      */
     class Ascii3DRenderer {
       constructor(canvas) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.width = 0;
-        this.height = 0;
-        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.ctx = canvas.getContext('2d', { alpha: true });
+        this.width = 360;
+        this.height = 460;
+        this.dpr = 1;
         this.points = AsciiObjectFactory.generate(AppState.model, AppState.density);
-        this.resize();
+        this.ensureValidCanvasSize();
       }
 
       rebuildModel() {
         this.points = AsciiObjectFactory.generate(AppState.model, AppState.density);
       }
 
-      resize() {
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.width = rect.width;
-        this.height = rect.height;
-        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-        this.canvas.width = Math.round(this.width * this.dpr);
-        this.canvas.height = Math.round(this.height * this.dpr);
+      /**
+       * Guarantees strictly positive canvas dimensions even if Flexbox layout
+       * hasn't settled on initial frame in mobile Safari / WebViews.
+       */
+      ensureValidCanvasSize() {
+        const parent = this.canvas.parentElement;
+        const rect = parent ? parent.getBoundingClientRect() : { width: 0, height: 0 };
+
+        let w = rect.width;
+        let h = rect.height;
+
+        if (!w || w < 10 || !h || h < 10) {
+          const vw = window.innerWidth || 390;
+          const vh = window.innerHeight || 844;
+          const stageW = Math.min(vw, vh * (9 / 16));
+          w = Math.max(240, stageW);
+          h = Math.max(300, vh * 0.68);
+        }
+
+        const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
+        const targetCanvasW = Math.round(w * nextDpr);
+        const targetCanvasH = Math.round(h * nextDpr);
+
+        if (this.canvas.width !== targetCanvasW || this.canvas.height !== targetCanvasH) {
+          this.width = w;
+          this.height = h;
+          this.dpr = nextDpr;
+          this.canvas.width = targetCanvasW;
+          this.canvas.height = targetCanvasH;
+        }
         this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
       }
 
       render(particleEngine, time) {
+        this.ensureValidCanvasSize();
+
         const ctx = this.ctx;
         const w = this.width;
         const h = this.height;
@@ -1178,21 +1280,21 @@
 
         ctx.clearRect(0, 0, w, h);
 
-        // 1. Ambient Nebula Radial Glow behind 3D Object
         const centerX = w * 0.5;
         const centerY = h * 0.43;
-        const scaleFactor = (Math.min(w, h * 0.72) / 360) * AppState.zoom;
+        const scaleFactor = Math.max(0.45, (Math.min(w, h * 0.75) / 350) * AppState.zoom);
 
-        const nebula = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, 210 * scaleFactor);
+        // 1. Ambient Radial Nebula Glow
+        const nebula = ctx.createRadialGradient(centerX, centerY, 8, centerX, centerY, 200 * scaleFactor);
         nebula.addColorStop(0, theme.bgGlow);
         nebula.addColorStop(1, 'rgba(3, 5, 10, 0)');
         ctx.fillStyle = nebula;
         ctx.fillRect(0, 0, w, h);
 
-        // 2. Render Background Twinkling Stars & Shooting Stars
+        // 2. Twinkling Stars & Shooting Stars
         particleEngine.renderBackground(ctx, w, h, time);
 
-        // 3. 3D Rotation Matrices (X, Y, Z)
+        // 3. 3D Rotation Matrices
         const cosX = Math.cos(AppState.rotX);
         const sinX = Math.sin(AppState.rotX);
         const cosY = Math.cos(AppState.rotY);
@@ -1200,51 +1302,42 @@
         const cosZ = Math.cos(AppState.rotZ);
         const sinZ = Math.sin(AppState.rotZ);
 
-        // Heartbeat pulse effect if model is Cyber Heart
         const beatScale = AppState.model === 'heart'
           ? 1 + 0.08 * Math.pow(Math.sin(time * 4.2), 4)
           : 1.0;
 
         const fov = 460;
         const projected = [];
-
-        // Light vector (from top-front-right)
         const lx = 0.45, ly = -0.55, lz = 0.7;
 
         for (let i = 0; i < this.points.length; i++) {
           const p = this.points[i];
-
-          // Formation progress filter (smoothly constructs object from bottom to top)
           if (p.order > AppState.formationProgress * 1.15) continue;
 
-          const formScale = Math.min(1, (AppState.formationProgress * 1.15 - p.order + 0.15) * 4);
-          let x = p.x * beatScale * formScale;
-          let y = p.y * beatScale * formScale;
-          let z = p.z * beatScale * formScale;
+          const formScale = Math.min(1, Math.max(0.05, (AppState.formationProgress * 1.15 - p.order + 0.15) * 4));
+          const x = p.x * beatScale * formScale;
+          const y = p.y * beatScale * formScale;
+          const z = p.z * beatScale * formScale;
 
-          // Rotate around Y axis
-          let x1 = x * cosY - z * sinY;
-          let z1 = z * cosY + x * sinY;
+          // Y rotation
+          const x1 = x * cosY - z * sinY;
+          const z1 = z * cosY + x * sinY;
+          // X rotation
+          const y2 = y * cosX - z1 * sinX;
+          const z2 = z1 * cosX + y * sinX;
+          // Z rotation
+          const x3 = x1 * cosZ - y2 * sinZ;
+          const y3 = y2 * cosZ + x1 * sinZ;
 
-          // Rotate around X axis
-          let y2 = y * cosX - z1 * sinX;
-          let z2 = z1 * cosX + y * sinX;
+          // Normal lighting
+          const nx1 = p.nx * cosY - p.nz * sinY;
+          const nz1 = p.nz * cosY + p.nx * sinY;
+          const ny2 = p.ny * cosX - nz1 * sinX;
+          const nz2 = nz1 * cosX + p.ny * sinX;
+          const diffuse = Math.max(0.2, nx1 * lx + ny2 * ly + nz2 * lz);
 
-          // Rotate around Z axis
-          let x3 = x1 * cosZ - y2 * sinZ;
-          let y3 = y2 * cosZ + x1 * sinZ;
-
-          // Rotate Normal for dynamic directional lighting
-          let nx1 = p.nx * cosY - p.nz * sinY;
-          let nz1 = p.nz * cosY + p.nx * sinY;
-          let ny2 = p.ny * cosX - nz1 * sinX;
-          let nz2 = nz1 * cosX + p.ny * sinX;
-
-          const diffuse = Math.max(0.18, nx1 * lx + ny2 * ly + nz2 * lz);
-
-          // Perspective Projection
           const depth = fov + z2;
-          if (depth <= 40) continue;
+          if (depth <= 25) continue;
           const persp = (fov / depth) * scaleFactor;
 
           projected.push({
@@ -1257,27 +1350,31 @@
           });
         }
 
-        // 4. Painter's Algorithm Depth Sorting (Back-to-Front)
+        // 4. Painter's Depth Sort
         projected.sort((a, b) => a.z - b.z);
 
-        // 5. Render 3D ASCII Glyphs with Shading & Glow
-        ctx.save();
+        // 5. Render ASCII Glyphs (GPU-safe bloom without per-glyph shadowBlur bottlenecks)
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
         const baseFontSize = Math.max(7, Math.round(10.5 * scaleFactor));
         const glowMult = AppState.glowIntensity;
+        let lastFont = '';
 
         for (let i = 0; i < projected.length; i++) {
           const item = projected[i];
           const p = item.point;
 
-          // Depth fog & brightness
-          const depthAlpha = Math.max(0.28, Math.min(1, (160 - item.z) / 280));
+          const depthAlpha = Math.max(0.3, Math.min(1, (165 - item.z) / 270));
           const fontSize = Math.max(6, Math.round(baseFontSize * (item.persp / scaleFactor)));
+          const fontStr = `700 ${fontSize}px "JetBrains Mono", monospace`;
+          if (fontStr !== lastFont) {
+            ctx.font = fontStr;
+            lastFont = fontStr;
+          }
 
           let color = theme.primary[2];
-          let glowColor = null;
+          let isGlowing = false;
           let char = p.char;
           let alpha = depthAlpha;
 
@@ -1287,23 +1384,20 @@
               Math.floor(item.diffuse * theme.primary.length)
             );
             color = theme.primary[shadeIdx];
-            if (item.diffuse > 0.78 && glowMult > 0.2) {
-              glowColor = color;
-            }
+            if (item.diffuse > 0.82) isGlowing = true;
           } else if (p.role === 'trunk') {
             color = '#92400e';
           } else if (p.role === 'star') {
             const pulse = 0.7 + 0.3 * Math.sin(time * 5.5);
             color = theme.secondary[0];
-            glowColor = theme.secondary[1];
-            alpha = Math.min(1, depthAlpha * (0.85 + 0.3 * pulse));
+            isGlowing = true;
+            alpha = Math.min(1, depthAlpha * (0.85 + 0.25 * pulse));
           } else if (p.role === 'light') {
-            // Blinking rhythmic fairy lights
             const blink = Math.sin(time * 4.5 + p.lightIndex * 1.65);
             const palette = [theme.accentA, theme.secondary[0], theme.accentB, theme.primary[3]];
             color = palette[p.lightIndex % palette.length];
             if (blink > 0.15) {
-              glowColor = color;
+              isGlowing = true;
               alpha = 1.0;
               char = blink > 0.7 ? '✦' : '*';
             } else {
@@ -1312,7 +1406,7 @@
           } else if (p.role === 'ornament') {
             const palette = [theme.accentA, theme.secondary[0], theme.accentB, '#f472b6'];
             color = palette[p.lightIndex % palette.length];
-            glowColor = color;
+            isGlowing = true;
           } else if (p.role === 'giftRed') {
             color = theme.accentA;
           } else if (p.role === 'giftBlue') {
@@ -1321,30 +1415,29 @@
             color = theme.secondary[1];
           } else if (p.role === 'ribbon') {
             color = theme.secondary[0];
-            glowColor = theme.secondary[0];
+            isGlowing = true;
           } else if (p.role === 'ocean') {
             color = item.diffuse > 0.55 ? '#0284c7' : '#0369a1';
           }
 
-          ctx.globalAlpha = alpha;
-          ctx.font = `700 ${fontSize}px "JetBrains Mono", monospace`;
+          ctx.fillStyle = color;
 
-          if (glowColor && glowMult > 0) {
-            ctx.shadowColor = glowColor;
-            ctx.shadowBlur = 8 * glowMult;
-          } else {
-            ctx.shadowBlur = 0;
+          // Lightweight double-pass halo for glowing elements (much faster & safer than shadowBlur on iOS)
+          if (isGlowing && glowMult > 0.15) {
+            ctx.globalAlpha = Math.min(0.35, alpha * 0.32 * glowMult);
+            ctx.fillText(char, item.sx - 1.2, item.sy);
+            ctx.fillText(char, item.sx + 1.2, item.sy);
           }
 
-          ctx.fillStyle = color;
+          ctx.globalAlpha = alpha;
           ctx.fillText(char, item.sx, item.sy);
         }
-        ctx.restore();
+        ctx.globalAlpha = 1;
 
-        // 6. Render Foreground Snow / Orbiting Sparks
-        particleEngine.renderForegroundParticles(ctx, w, h, centerX, centerY, scaleFactor, time);
+        // 6. Foreground Snow & Orbiting Sparks
+        particleEngine.renderForeground(ctx, w, h, centerX, centerY, scaleFactor, time);
 
-        // 7. Render Cinematic Typography below the 3D Object
+        // 7. Cinematic Bottom Text
         this.renderCinematicText(ctx, w, h, time, theme);
 
         return projected.length;
@@ -1352,31 +1445,27 @@
 
       renderCinematicText(ctx, w, h, time, theme) {
         if (AppState.textRevealProgress <= 0.01) return;
-
         const text = (AppState.caption || '').toUpperCase();
         if (!text) return;
 
         const chars = text.split('');
         const visibleCount = Math.floor(chars.length * AppState.textRevealProgress);
 
-        // Position cleanly in the lower breathing room of the 3D viewport
         const textY = h * 0.895;
         const maxTextWidth = w * 0.88;
-        const idealSpacing = Math.min(20, maxTextWidth / Math.max(1, chars.length));
-        const fontSize = Math.max(12, Math.min(21, Math.round(idealSpacing * 1.18)));
+        const idealSpacing = Math.min(19, maxTextWidth / Math.max(1, chars.length));
+        const fontSize = Math.max(11, Math.min(20, Math.round(idealSpacing * 1.16)));
 
         const totalWidth = (chars.length - 1) * idealSpacing;
         const startX = w * 0.5 - totalWidth * 0.5;
 
-        ctx.save();
-        ctx.font = `800 ${fontSize}px "JetBrains Mono", monospace`;
+        ctx.font = `800 ${fontSize}px "JetBrains Mono", "Noto Sans Thai", monospace`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
-        // Subtle horizontal light flare behind text
         const flare = ctx.createLinearGradient(startX - 20, textY, startX + totalWidth + 20, textY);
         flare.addColorStop(0, 'rgba(0,0,0,0)');
-        flare.addColorStop(0.5, 'rgba(251, 191, 36, 0.08)');
+        flare.addColorStop(0.5, 'rgba(251, 191, 36, 0.09)');
         flare.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.fillStyle = flare;
         ctx.fillRect(0, textY - 18, w, 36);
@@ -1385,41 +1474,36 @@
           const ch = chars[i];
           if (ch === ' ') continue;
 
-          // Letter-by-letter pop-in & gentle harmonic wave
-          const charAge = Math.min(1, (AppState.textRevealProgress * chars.length - i) * 0.8);
+          const charAge = Math.min(1, (AppState.textRevealProgress * chars.length - i) * 0.85);
           const waveY = Math.sin(time * 2.8 + i * 0.35) * 2.2;
           const x = startX + i * idealSpacing;
           const y = textY + waveY - (1 - charAge) * 8;
 
-          // Alternating Gold & Crimson Red (or active theme colors)
-          const isEven = i % 2 === 0;
-          const color = isEven ? theme.textPrimary : theme.textSecondary;
+          const color = i % 2 === 0 ? theme.textPrimary : theme.textSecondary;
+          ctx.fillStyle = color;
+
+          if (AppState.glowIntensity > 0.2) {
+            ctx.globalAlpha = charAge * 0.32 * Math.min(1.4, AppState.glowIntensity);
+            ctx.fillText(ch, x, y + 1.5);
+          }
 
           ctx.globalAlpha = charAge;
-          ctx.fillStyle = color;
-          ctx.shadowColor = color;
-          ctx.shadowBlur = 12 * AppState.glowIntensity;
-
           ctx.fillText(ch, x, y);
         }
 
-        // Blinking terminal cursor at the end of the text
         if (Math.sin(time * 6) > 0 && visibleCount > 0) {
           const cursorX = startX + Math.min(chars.length, visibleCount) * idealSpacing + 4;
           ctx.globalAlpha = 0.85;
           ctx.fillStyle = theme.textPrimary;
           ctx.fillText('_', cursorX, textY);
         }
-
-        ctx.restore();
+        ctx.globalAlpha = 1;
       }
     }
 
     /**
      * ============================================================================
-     * MODULE 5: LIVE CODE EDITOR VISUALIZATION (CodeEditorVisualizer)
-     * Displays live syntax-highlighted Python generative code synchronized with
-     * the real-time animation phase & active 3D object
+     * 6. LIVE HACKER TERMINAL CODE VISUALIZER
      * ============================================================================
      */
     class CodeEditorVisualizer {
@@ -1442,21 +1526,21 @@
               `<span class="tok-kw">import</span> <span class="tok-var">math</span>, <span class="tok-cls">AsciiEngine3D</span> <span class="tok-kw">as</span> <span class="tok-var">gfx</span>`,
               `<span class="tok-kw">def</span> <span class="tok-fn">build_pine_tree</span>(<span class="tok-var">tiers</span>=<span class="tok-num">7</span>, <span class="tok-var">glyphs</span>=<span class="tok-str">"#%&*+@0"</span>):`,
               `    <span class="tok-var">tree</span> = <span class="tok-fn">spawn_conical_foliage</span>(<span class="tok-var">tiers</span>, <span class="tok-var">shade</span>=<span class="tok-str">"emerald"</span>)`,
-              `    <span class="tok-var">tree</span>.<span class="tok-fn">attach_star</span>(<span class="tok-var">y</span>=<span class="tok-num">-142</span>, <span class="tok-var">glow</span>=<span class="tok-str">"#fbbf24"</span>)`,
+              `    <span class="tok-var">tree</span>.<span class="tok-fn">attach_star</span>(<span class="tok-var">y</span>=<span class="tok-num">-139</span>, <span class="tok-var">glow</span>=<span class="tok-str">"#fbbf24"</span>)`,
               `    <span class="tok-var">tree</span>.<span class="tok-fn">blink_ornaments</span>(<span class="tok-var">colors</span>=[<span class="tok-str">"RED"</span>, <span class="tok-str">"GOLD"</span>, <span class="tok-str">"CYAN"</span>])`,
               `    <span class="tok-var">snow</span>.<span class="tok-fn">emit_particles</span>(<span class="tok-var">mode</span>=<span class="tok-str">"VORTEX_DRIFT"</span>)`,
               `    <span class="tok-fn">project_3d_perspective</span>(<span class="tok-var">tree</span>, <span class="tok-var">rot_y</span>=<span class="tok-var">frame</span> * <span class="tok-num">0.02</span>)`,
-              `    <span class="tok-fn">render_cinematic_text</span>(<span class="tok-str">"MERRY CHRISTMAS 2026"</span>)`
+              `    <span class="tok-fn">render_cinematic_text</span>(<span class="tok-var">CAPTION_BUFFER</span>)`
             ]
           },
           earth: {
             filename: 'earth_globe.py',
             lines: [
               `<span class="tok-kw">import</span> <span class="tok-var">math</span>, <span class="tok-cls">AsciiEngine3D</span> <span class="tok-kw">as</span> <span class="tok-var">gfx</span>`,
-              `<span class="tok-kw">def</span> <span class="tok-fn">render_planet_earth</span>(<span class="tok-var">radius</span>=<span class="tok-num">112</span>, <span class="tok-var">fov</span>=<span class="tok-num">460</span>):`,
-              `    <span class="tok-var">sphere</span> = <span class="tok-fn">spherical_harmonics</span>(<span class="tok-var">lat</span>=<span class="tok-num">34</span>, <span class="tok-var">lon</span>=<span class="tok-num">68</span>)`,
+              `<span class="tok-kw">def</span> <span class="tok-fn">render_planet_earth</span>(<span class="tok-var">radius</span>=<span class="tok-num">110</span>, <span class="tok-var">fov</span>=<span class="tok-num">460</span>):`,
+              `    <span class="tok-var">sphere</span> = <span class="tok-fn">spherical_harmonics</span>(<span class="tok-var">lat</span>=<span class="tok-num">32</span>, <span class="tok-var">lon</span>=<span class="tok-num">64</span>)`,
               `    <span class="tok-var">biomes</span> = <span class="tok-fn">classify_continents</span>(<span class="tok-var">sphere</span>, <span class="tok-str">"@#%~"</span>)`,
-              `    <span class="tok-var">orbit</span>.<span class="tok-fn">update_satellite_ring</span>(<span class="tok-var">r</span>=<span class="tok-num">145</span>, <span class="tok-var">glyph</span>=<span class="tok-str">"★"</span>)`,
+              `    <span class="tok-var">orbit</span>.<span class="tok-fn">update_satellite_ring</span>(<span class="tok-var">r</span>=<span class="tok-num">142</span>, <span class="tok-var">glyph</span>=<span class="tok-str">"★"</span>)`,
               `    <span class="tok-var">stars</span>.<span class="tok-fn">twinkle_deep_space</span>(<span class="tok-var">shooting_stars</span>=<span class="tok-cls">True</span>)`,
               `    <span class="tok-fn">depth_sort_painters</span>(<span class="tok-var">biomes</span>, <span class="tok-var">axis</span>=<span class="tok-str">"XYZ"</span>)`,
               `    <span class="tok-fn">render_cinematic_text</span>(<span class="tok-var">CAPTION_BUFFER</span>)`
@@ -1480,10 +1564,10 @@
             lines: [
               `<span class="tok-kw">import</span> <span class="tok-var">math</span>, <span class="tok-cls">AsciiEngine3D</span> <span class="tok-kw">as</span> <span class="tok-var">gfx</span>`,
               `<span class="tok-kw">def</span> <span class="tok-fn">gas_giant_saturn</span>(<span class="tok-var">tilt</span>=<span class="tok-num">0.42</span>, <span class="tok-var">bands</span>=<span class="tok-num">14</span>):`,
-              `    <span class="tok-var">core</span> = <span class="tok-fn">banded_atmosphere</span>(<span class="tok-var">r</span>=<span class="tok-num">78</span>, <span class="tok-var">chars</span>=<span class="tok-str">"#%&"</span>)`,
-              `    <span class="tok-var">rings</span> = <span class="tok-fn">concentric_ice_rings</span>([<span class="tok-num">102</span>..<span class="tok-num">156</span>], <span class="tok-var">tilt</span>)`,
+              `    <span class="tok-var">core</span> = <span class="tok-fn">banded_atmosphere</span>(<span class="tok-var">r</span>=<span class="tok-num">76</span>, <span class="tok-var">chars</span>=<span class="tok-str">"#%&"</span>)`,
+              `    <span class="tok-var">rings</span> = <span class="tok-fn">concentric_ice_rings</span>([<span class="tok-num">100</span>..<span class="tok-num">150</span>], <span class="tok-var">tilt</span>)`,
               `    <span class="tok-var">shader</span>.<span class="tok-fn">apply_solar_specular</span>(<span class="tok-var">glow</span>=<span class="tok-str">"GOLD"</span>)`,
-              `    <span class="tok-var">dust</span>.<span class="tok-fn">stream_cosmic_particles</span>(<span class="tok-var">count</span>=<span class="tok-num">160</span>)`,
+              `    <span class="tok-var">dust</span>.<span class="tok-fn">stream_cosmic_particles</span>(<span class="tok-var">count</span>=<span class="tok-num">150</span>)`,
               `    <span class="tok-fn">depth_sort_painters</span>(<span class="tok-var">core</span> + <span class="tok-var">rings</span>)`,
               `    <span class="tok-fn">render_cinematic_text</span>(<span class="tok-var">CAPTION_BUFFER</span>)`
             ]
@@ -1492,9 +1576,9 @@
             filename: 'torus_knot.py',
             lines: [
               `<span class="tok-kw">import</span> <span class="tok-var">math</span>, <span class="tok-cls">AsciiEngine3D</span> <span class="tok-kw">as</span> <span class="tok-var">gfx</span>`,
-              `<span class="tok-kw">def</span> <span class="tok-fn">sacred_torus_knot</span>(<span class="tok-var">p</span>=<span class="tok-num">3</span>, <span class="tok-var">q</span>=<span class="tok-num">4</span>, <span class="tok-var">steps</span>=<span class="tok-num">220</span>):`,
-              `    <span class="tok-var">r</span> = <span class="tok-num">68</span> + <span class="tok-num">28</span> * <span class="tok-var">math</span>.<span class="tok-fn">cos</span>(<span class="tok-var">q</span> * <span class="tok-var">u</span>)`,
-              `    <span class="tok-var">curve</span> = (<span class="tok-var">r</span>*<span class="tok-fn">cos</span>(<span class="tok-var">p</span>*<span class="tok-var">u</span>), <span class="tok-var">r</span>*<span class="tok-fn">sin</span>(<span class="tok-var">p</span>*<span class="tok-var">u</span>), <span class="tok-num">42</span>*<span class="tok-fn">sin</span>(<span class="tok-var">q</span>*<span class="tok-var">u</span>))`,
+              `<span class="tok-kw">def</span> <span class="tok-fn">sacred_torus_knot</span>(<span class="tok-var">p</span>=<span class="tok-num">3</span>, <span class="tok-var">q</span>=<span class="tok-num">4</span>, <span class="tok-var">steps</span>=<span class="tok-num">200</span>):`,
+              `    <span class="tok-var">r</span> = <span class="tok-num">66</span> + <span class="tok-num">26</span> * <span class="tok-var">math</span>.<span class="tok-fn">cos</span>(<span class="tok-var">q</span> * <span class="tok-var">u</span>)`,
+              `    <span class="tok-var">curve</span> = (<span class="tok-var">r</span>*<span class="tok-fn">cos</span>(<span class="tok-var">p</span>*<span class="tok-var">u</span>), <span class="tok-var">r</span>*<span class="tok-fn">sin</span>(<span class="tok-var">p</span>*<span class="tok-var">u</span>), <span class="tok-num">40</span>*<span class="tok-fn">sin</span>(<span class="tok-var">q</span>*<span class="tok-var">u</span>))`,
               `    <span class="tok-var">tube</span> = <span class="tok-fn">extrude_ascii_manifold</span>(<span class="tok-var">curve</span>, <span class="tok-str">"@#"</span>)`,
               `    <span class="tok-var">aura</span>.<span class="tok-fn">cycle_chromatic_glow</span>(<span class="tok-var">speed</span>=<span class="tok-num">1.0</span>)`,
               `    <span class="tok-fn">project_3d_perspective</span>(<span class="tok-var">tube</span>, <span class="tok-var">fov</span>=<span class="tok-num">460</span>)`,
@@ -1508,15 +1592,12 @@
         const scripts = this.getScripts();
         const script = scripts[model] || scripts.tree;
         this.filenameEl.textContent = script.filename;
-
         this.container.innerHTML = script.lines
-          .map(
-            (html, idx) => `
+          .map((html, idx) => `
             <div class="code-line" data-line="${idx}">
               <span class="line-num">${idx + 1}</span>
               <span class="code-text">${html}</span>
-            </div>`
-          )
+            </div>`)
           .join('');
         this.lastModel = model;
         this.lastActiveLine = -1;
@@ -1527,18 +1608,16 @@
           this.renderScript(AppState.model);
         }
 
-        // Determine currently executing line based on animation phase
         let activeLine = 6;
-        let phaseLabel = 'PROJECT_3D_MATRIX';
+        let phaseLabel = '3D_PERSPECTIVE';
 
         if (AppState.formationProgress < 0.92) {
           activeLine = Math.min(3, Math.floor(AppState.formationProgress * 4));
-          phaseLabel = 'BUILD_3D_TOPOLOGY';
+          phaseLabel = 'BUILD_TOPOLOGY';
         } else if (AppState.textRevealProgress < 0.98) {
           activeLine = 7;
-          phaseLabel = 'REVEAL_CINEMATIC_TEXT';
+          phaseLabel = 'CINEMATIC_TEXT';
         } else {
-          // Cycle smoothly across lighting, particles, projection, and text lines
           const cycle = Math.floor(time * 2.2) % 4;
           activeLine = 4 + cycle;
           const labels = ['LIGHTING_SHADER', 'PARTICLE_VORTEX', '3D_PERSPECTIVE', 'CINEMATIC_GLOW'];
@@ -1554,44 +1633,88 @@
         }
 
         this.fpsEl.textContent = AppState.fps;
-        this.vertsEl.textContent = `GLYPHS: ${vertexCount} | DEPTH-SORT: PAINTER`;
+        this.vertsEl.textContent = `VERTICES: ${vertexCount} | 3D_PROJECTION: ACTIVE`;
         this.phaseEl.textContent = `PHASE: ${phaseLabel}`;
       }
     }
 
     /**
      * ============================================================================
-     * MODULE 6: INTERACTIVE CONTROLS & MAIN LOOP (script.js)
+     * 7. MAIN BOOTSTRAP & INTERACTION CONTROLLER
      * ============================================================================
      */
-    window.addEventListener('DOMContentLoaded', () => {
+    function bootExperience() {
       const canvas = document.getElementById('ascii-canvas');
       const canvasContainer = document.getElementById('canvas-container');
       const renderer = new Ascii3DRenderer(canvas);
       const particles = new ParticleEngine();
       const codeEditor = new CodeEditorVisualizer();
+      const musicBox = new CuteMusicBoxEngine();
 
-      // Replay formation & cinematic text sequence
       function triggerReplay(withBurst = true) {
         AppState.formationProgress = 0;
         AppState.textRevealProgress = 0;
         if (withBurst) {
-          setTimeout(() => particles.triggerSparkBurst(30), 650);
+          setTimeout(() => particles.triggerSparkBurst(28), 600);
         }
       }
 
+      // Immediate synchronous first render so screen is never blank
       triggerReplay(true);
+      const initialCount = renderer.render(particles, 0);
+      codeEditor.update(0, initialCount);
 
-      // Resize Handling (Retina / iPad / iPhone / Desktop)
-      window.addEventListener('resize', () => {
-        renderer.resize();
+      // Resize observer + window resize
+      window.addEventListener('resize', () => renderer.ensureValidCanvasSize());
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(() => renderer.ensureValidCanvasSize()).observe(canvasContainer);
+      }
+
+      // Music Toggle Synchronization (HUD button + Settings switch)
+      const quickMusicBtn = document.getElementById('quick-music-btn');
+      const quickMusicIcon = document.getElementById('quick-music-icon');
+      const quickMusicLabel = document.getElementById('quick-music-label');
+      const toggleMusicCheckbox = document.getElementById('toggle-music');
+
+      function syncMusicUI(playing) {
+        toggleMusicCheckbox.checked = playing;
+        if (playing) {
+          quickMusicIcon.textContent = '🔊';
+          quickMusicLabel.textContent = 'กำลังเล่นเพลง';
+          quickMusicBtn.classList.add('border-amber-400/70', 'text-amber-300');
+        } else {
+          quickMusicIcon.textContent = '🎵';
+          quickMusicLabel.textContent = 'เปิดเพลง';
+          quickMusicBtn.classList.remove('border-amber-400/70', 'text-amber-300');
+        }
+      }
+
+      quickMusicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isNowPlaying = musicBox.toggle();
+        syncMusicUI(isNowPlaying);
       });
 
-      // Touch & Mouse Drag to Spin 3D Object
+      toggleMusicCheckbox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          musicBox.start();
+          syncMusicUI(true);
+        } else {
+          musicBox.stop();
+          syncMusicUI(false);
+        }
+      });
+
+      // Pointer / Touch Drag & Tap Spark Burst
+      let pointerDownX = 0;
+      let pointerDownY = 0;
+
       function onPointerDown(clientX, clientY) {
         AppState.isDragging = true;
         AppState.lastPointerX = clientX;
         AppState.lastPointerY = clientY;
+        pointerDownX = clientX;
+        pointerDownY = clientY;
         AppState.velocityY = 0;
       }
 
@@ -1606,41 +1729,54 @@
         AppState.lastPointerY = clientY;
       }
 
-      function onPointerUp() {
+      function onPointerUp(clientX, clientY) {
+        if (!AppState.isDragging) return;
         AppState.isDragging = false;
+        const dist = Math.hypot(clientX - pointerDownX, clientY - pointerDownY);
+        if (dist < 8) {
+          // Short tap: either exit recording mode or trigger micro sparkle burst
+          if (AppState.recordingMode) {
+            exitRecordingMode();
+          } else {
+            const rect = canvasContainer.getBoundingClientRect();
+            const relX = (clientX - rect.left - rect.width * 0.5) * 0.7;
+            const relY = (clientY - rect.top - rect.height * 0.43) * 0.7;
+            particles.triggerSparkBurst(22, relX, relY);
+          }
+        }
       }
 
       canvasContainer.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
       window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
-      window.addEventListener('mouseup', onPointerUp);
+      window.addEventListener('mouseup', (e) => onPointerUp(e.clientX, e.clientY));
 
       canvasContainer.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) {
+        if (e.touches.length > 0) {
           onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: true });
 
       canvasContainer.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 1) {
+        if (e.touches.length > 0) {
           onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
         }
       }, { passive: true });
 
-      canvasContainer.addEventListener('touchend', onPointerUp);
+      canvasContainer.addEventListener('touchend', (e) => {
+        const touch = e.changedTouches && e.changedTouches[0];
+        onPointerUp(touch ? touch.clientX : pointerDownX, touch ? touch.clientY : pointerDownY);
+      });
 
-      // Scroll Wheel Zoom
-      canvasContainer.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        AppState.zoom = Math.max(0.65, Math.min(1.55, AppState.zoom - e.deltaY * 0.0008));
-      }, { passive: false });
-
-      // Settings Drawer Controls
+      // Settings Drawer & Recording Mode
       const settingsDrawer = document.getElementById('settings-drawer');
-      const openSettingsBtn = document.getElementById('open-settings-btn');
-      const closeSettingsBtn = document.getElementById('close-settings-btn');
-      const hideUiBtn = document.getElementById('btn-hide-ui');
+      const hudControls = document.getElementById('hud-controls');
+      const recordToast = document.getElementById('record-toast');
+      let toastTimeout = null;
 
       function openDrawer() {
+        AppState.recordingMode = false;
+        hudControls.classList.remove('opacity-0', 'pointer-events-none');
+        recordToast.classList.add('opacity-0', '-translate-y-2');
         settingsDrawer.classList.remove('opacity-0', 'pointer-events-none');
       }
 
@@ -1648,33 +1784,51 @@
         settingsDrawer.classList.add('opacity-0', 'pointer-events-none');
       }
 
-      openSettingsBtn.addEventListener('click', openDrawer);
-      closeSettingsBtn.addEventListener('click', closeDrawer);
-      hideUiBtn.addEventListener('click', closeDrawer);
+      function enterRecordingMode() {
+        closeDrawer();
+        AppState.recordingMode = true;
+        hudControls.classList.add('opacity-0', 'pointer-events-none');
+        recordToast.classList.remove('opacity-0', '-translate-y-2');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          recordToast.classList.add('opacity-0', '-translate-y-2');
+        }, 3000);
+      }
 
-      // 3D Model Buttons
+      function exitRecordingMode() {
+        AppState.recordingMode = false;
+        hudControls.classList.remove('opacity-0', 'pointer-events-none');
+        recordToast.classList.add('opacity-0', '-translate-y-2');
+      }
+
+      document.getElementById('open-settings-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDrawer();
+      });
+      document.getElementById('close-settings-btn').addEventListener('click', closeDrawer);
+      document.getElementById('btn-record-mode').addEventListener('click', enterRecordingMode);
+
+      // 3D Model Selection
       const captionInput = document.getElementById('cinematic-text-input');
       document.querySelectorAll('.model-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.model-btn').forEach((b) => {
-            b.className = 'model-btn px-2.5 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-1.5';
-            if (b.dataset.model === 'knot') b.classList.add('col-span-2');
+            b.className = 'model-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 hover:border-slate-600 text-left font-medium transition flex items-center gap-2';
           });
-          btn.className = 'model-btn px-2.5 py-2 rounded-lg border text-left font-medium transition flex items-center gap-1.5 bg-cyan-500/20 border-cyan-400 text-cyan-200';
-          if (btn.dataset.model === 'knot') btn.classList.add('col-span-2');
+          btn.className = 'model-btn px-3 py-2 rounded-lg border text-left font-medium transition flex items-center gap-2 bg-cyan-500/20 border-cyan-400 text-cyan-200';
 
           AppState.model = btn.dataset.model;
-          const suggested = MODEL_DEFAULT_CAPTIONS[AppState.model];
-          if (suggested) {
-            AppState.caption = suggested;
-            captionInput.value = suggested;
+          const nextCaption = MODEL_CAPTIONS[AppState.model];
+          if (nextCaption) {
+            AppState.caption = nextCaption;
+            captionInput.value = nextCaption;
           }
           renderer.rebuildModel();
           triggerReplay(true);
         });
       });
 
-      // Custom Caption Input
+      // Custom Caption & Quick Presets
       document.getElementById('apply-text-btn').addEventListener('click', () => {
         AppState.caption = captionInput.value.trim() || 'ASCII 3D 2026';
         AppState.textRevealProgress = 0;
@@ -1685,13 +1839,22 @@
         AppState.caption = captionInput.value;
       });
 
-      // Color Theme Buttons
+      document.querySelectorAll('.preset-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const text = chip.dataset.preset;
+          captionInput.value = text;
+          AppState.caption = text;
+          AppState.textRevealProgress = 0;
+        });
+      });
+
+      // Theme Buttons
       document.querySelectorAll('.theme-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.theme-btn').forEach((b) => {
-            b.className = 'theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition';
+            b.className = 'theme-btn px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 text-slate-300 text-[11px] font-medium transition text-left';
           });
-          btn.className = 'theme-btn px-2.5 py-1.5 rounded-lg border bg-emerald-500/20 border-emerald-400 text-emerald-200 text-[11px] font-medium transition';
+          btn.className = 'theme-btn px-2.5 py-1.5 rounded-lg border bg-emerald-500/20 border-emerald-400 text-emerald-200 text-[11px] font-medium transition text-left';
           AppState.theme = btn.dataset.theme;
         });
       });
@@ -1716,7 +1879,7 @@
       const valStars = document.getElementById('val-stars');
       sliderStars.addEventListener('input', () => {
         AppState.starCount = parseInt(sliderStars.value, 10);
-        valStars.textContent = AppState.starCount;
+        valStars.textContent = `${AppState.starCount}`;
         particles.initStars(AppState.starCount);
       });
 
@@ -1727,12 +1890,20 @@
         valGlow.textContent = `${AppState.glowIntensity.toFixed(1)}x`;
       });
 
-      // Particles Toggle
+      // Effect Switches
       document.getElementById('toggle-particles').addEventListener('change', (e) => {
         AppState.particlesEnabled = e.target.checked;
       });
+      document.getElementById('toggle-shooting').addEventListener('change', (e) => {
+        AppState.shootingStarsEnabled = e.target.checked;
+        if (!AppState.shootingStarsEnabled) particles.shootingStars = [];
+      });
+      document.getElementById('toggle-bursts').addEventListener('change', (e) => {
+        AppState.microBurstsEnabled = e.target.checked;
+        if (AppState.microBurstsEnabled) particles.triggerSparkBurst(24);
+      });
 
-      // Play / Pause Button
+      // Play/Pause, Replay & Reset Defaults
       const playPauseBtn = document.getElementById('btn-play-pause');
       const statusText = document.getElementById('status-text');
       const statusDot = document.getElementById('status-dot');
@@ -1740,29 +1911,57 @@
       playPauseBtn.addEventListener('click', () => {
         AppState.isPlaying = !AppState.isPlaying;
         if (AppState.isPlaying) {
-          playPauseBtn.textContent = '⏸ Pause';
+          playPauseBtn.textContent = '⏸ หยุดชั่วคราว';
           statusText.textContent = 'RUNNING';
           statusDot.classList.remove('bg-amber-400');
           statusDot.classList.add('bg-emerald-400');
         } else {
-          playPauseBtn.textContent = '▶ Play';
+          playPauseBtn.textContent = '▶ เล่นต่อ';
           statusText.textContent = 'PAUSED';
           statusDot.classList.remove('bg-emerald-400');
           statusDot.classList.add('bg-amber-400');
         }
       });
 
-      // Reset / Replay Button
-      document.getElementById('btn-reset').addEventListener('click', () => {
+      document.getElementById('btn-replay').addEventListener('click', () => {
         AppState.rotX = 0.12;
         AppState.rotY = 0;
         AppState.rotZ = 0;
-        AppState.zoom = 1.0;
         triggerReplay(true);
         closeDrawer();
       });
 
-      // High-Precision Animation Loop (requestAnimationFrame)
+      document.getElementById('btn-reset-defaults').addEventListener('click', () => {
+        AppState.model = 'tree';
+        AppState.caption = 'MERRY CHRISTMAS 2026';
+        AppState.theme = 'holiday';
+        AppState.rotationSpeed = 1.0;
+        AppState.density = 1.0;
+        AppState.starCount = 150;
+        AppState.glowIntensity = 1.0;
+        AppState.particlesEnabled = true;
+        AppState.shootingStarsEnabled = true;
+        AppState.microBurstsEnabled = true;
+        AppState.rotX = 0.12;
+        AppState.rotY = 0;
+        AppState.rotZ = 0;
+
+        captionInput.value = AppState.caption;
+        sliderSpeed.value = '1.0'; valSpeed.textContent = '1.0x';
+        sliderDensity.value = '1.0'; valDensity.textContent = '100%';
+        sliderStars.value = '150'; valStars.textContent = '150';
+        sliderGlow.value = '1.0'; valGlow.textContent = '1.0x';
+        document.getElementById('toggle-particles').checked = true;
+        document.getElementById('toggle-shooting').checked = true;
+        document.getElementById('toggle-bursts').checked = true;
+
+        particles.initStars(150);
+        renderer.rebuildModel();
+        triggerReplay(true);
+        closeDrawer();
+      });
+
+      // Main 60FPS Animation Loop
       let lastTimestamp = performance.now();
       let frameCounter = 0;
       let fpsTimer = 0;
@@ -1770,11 +1969,10 @@
       function animate(now) {
         requestAnimationFrame(animate);
 
-        const rawDt = (now - lastTimestamp) / 1000;
+        const rawDt = Math.max(0.001, (now - lastTimestamp) / 1000);
         lastTimestamp = now;
         const dt = Math.min(rawDt, 0.05);
 
-        // FPS Calculation
         frameCounter++;
         fpsTimer += rawDt;
         if (fpsTimer >= 0.5) {
@@ -1786,21 +1984,17 @@
         if (AppState.isPlaying) {
           AppState.elapsedTime += dt;
 
-          // 1. Progress 3D Object Formation (0 -> 1 over ~1.4 seconds)
           if (AppState.formationProgress < 1) {
-            AppState.formationProgress = Math.min(1, AppState.formationProgress + dt * 0.75);
+            AppState.formationProgress = Math.min(1, AppState.formationProgress + dt * 0.78);
           }
 
-          // 2. Progress Cinematic Text Reveal once object is mostly formed
-          if (AppState.formationProgress > 0.72 && AppState.textRevealProgress < 1) {
-            AppState.textRevealProgress = Math.min(1, AppState.textRevealProgress + dt * 0.65);
+          if (AppState.formationProgress > 0.7 && AppState.textRevealProgress < 1) {
+            AppState.textRevealProgress = Math.min(1, AppState.textRevealProgress + dt * 0.68);
           }
 
-          // 3. Continuous 3D Rotation + Inertia
           if (!AppState.isDragging) {
             AppState.rotY += dt * 0.75 * AppState.rotationSpeed + AppState.velocityY;
             AppState.velocityY *= 0.92;
-            // Subtle breathing tilt on X and Z axes
             AppState.rotX = 0.12 + Math.sin(AppState.elapsedTime * 0.7) * 0.06;
             AppState.rotZ = Math.sin(AppState.elapsedTime * 0.5) * 0.035;
           }
@@ -1813,7 +2007,13 @@
       }
 
       requestAnimationFrame(animate);
-    });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootExperience);
+    } else {
+      bootExperience();
+    }
   </script>
 </body>
 </html>
